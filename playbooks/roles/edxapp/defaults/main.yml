@@ -71,6 +71,13 @@ EDXAPP_MYSQL_REPLICA_PORT: "{{ EDXAPP_MYSQL_PORT }}"
 EDXAPP_MYSQL_HOST: 'localhost'
 EDXAPP_MYSQL_PORT: '3306'
 
+# list of dictionaries of the format
+# { 'host': 'hostname', 'port': 'portnumber', 'otherconfigsuchas use_ssl': 'True' }
+# http://elasticsearch-py.readthedocs.org/en/master/api.html#elasticsearch
+EDXAPP_ELASTIC_SEARCH_CONFIG:
+    - host: "localhost"
+      port: 9200
+
 EDXAPP_LMS_ENV: 'lms.envs.aws'
 EDXAPP_CMS_ENV: 'cms.envs.aws'
 
@@ -88,14 +95,18 @@ EDXAPP_CACHE_COURSE_STRUCTURE_MEMCACHE: "{{ EDXAPP_MEMCACHE }}"
 EDXAPP_COMMENTS_SERVICE_URL:  'http://localhost:18080'
 EDXAPP_COMMENTS_SERVICE_KEY:  'password'
 
-EDXAPP_EDXAPP_SECRET_KEY: ""
+EDXAPP_EDXAPP_SECRET_KEY: "DUMMY KEY CHANGE BEFORE GOING TO PRODUCTION"
 
 EDXAPP_OEE_URL: 'http://localhost:18060/'
 EDXAPP_OEE_USER: 'lms'
 EDXAPP_OEE_PASSWORD: 'password'
 
 EDXAPP_ANALYTICS_API_KEY:  ""
+EDXAPP_LTI_USER_EMAIL_DOMAIN: "lti.example.com"
+# 900s, or 15 mins
+EDXAPP_LTI_AGGREGATE_SCORE_PASSBACK_DELAY: 900
 EDXAPP_PAYMENT_SUPPORT_EMAIL: "billing@example.com"
+EDXAPP_YOUTUBE_API_KEY: "PUT_YOUR_API_KEY_HERE"
 EDXAPP_ZENDESK_USER: ""
 EDXAPP_ZENDESK_URL: ""
 EDXAPP_ZENDESK_API_KEY: ""
@@ -105,6 +116,8 @@ EDXAPP_CELERY_BROKER_VHOST: ""
 
 EDXAPP_VIDEO_CDN_URLS:
   EXAMPLE_COUNTRY_CODE: "http://example.com/edx/video?s3_url="
+
+EDXAPP_CREDIT_HELP_LINK_URL: ""
 
 EDXAPP_PLATFORM_NAME: 'Your Platform Name Here'
 EDXAPP_STUDIO_NAME: 'Studio'
@@ -119,9 +132,11 @@ EDXAPP_CAS_ATTRIBUTE_PACKAGE: ""
 EDXAPP_ENABLE_AUTO_AUTH: false
 # Settings for enabling and configuring third party authorization
 EDXAPP_ENABLE_THIRD_PARTY_AUTH: false
-EDXAPP_THIRD_PARTY_AUTH: {}
 
 EDXAPP_ENABLE_EDXNOTES: false
+
+EDXAPP_ENABLE_CREDIT_ELIGIBILITY: false
+EDXAPP_ENABLE_CREDIT_API: false
 
 EDXAPP_MODULESTORE_MAPPINGS:
     'preview\.': 'draft-preferred'
@@ -185,6 +200,9 @@ EDXAPP_FEATURES:
   ENABLE_VIDEO_BEACON: false
   ENABLE_ONLOAD_BEACON: false
   ENABLE_EDXNOTES: "{{ EDXAPP_ENABLE_EDXNOTES }}"
+  ENABLE_CREDIT_API: "{{ EDXAPP_ENABLE_CREDIT_API }}"
+  ENABLE_CREDIT_ELIGIBILITY: "{{ EDXAPP_ENABLE_CREDIT_ELIGIBILITY }}"
+  ENABLE_SPECIAL_EXAMS: false
 
 EDXAPP_BOOK_URL: ""
 # This needs to be set to localhost
@@ -201,7 +219,6 @@ EDXAPP_LOGGING_ENV:  'sandbox'
 
 EDXAPP_SYSLOG_SERVER: ""
 EDXAPP_RABBIT_HOSTNAME: 'localhost'
-EDXAPP_XML_MAPPINGS: {}
 
 EDXAPP_LMS_NGINX_PORT: 18000
 EDXAPP_LMS_SSL_NGINX_PORT: 48000
@@ -233,10 +250,15 @@ EDXAPP_JWT_EXPIRATION: 30  # Number of seconds until expiration
 
 EDXAPP_PLATFORM_TWITTER_ACCOUNT: '@YourPlatformTwitterAccount'
 EDXAPP_PLATFORM_FACEBOOK_ACCOUNT: 'http://www.facebook.com/YourPlatformFacebookAccount'
+EDXAPP_FACEBOOK_APP_ID: "FACEBOOK_APP_ID"
+EDXAPP_FACEBOOK_APP_SECRET: "FACEBOOK_APP_SECRET"
+EDXAPP_FACEBOOK_API_VERSION: "v2.1"
+
+
 
 EDXAPP_SOCIAL_MEDIA_FOOTER_URLS: {}
 EDXAPP_MOBILE_STORE_URLS: {}
-EDXAPP_FOOTER_ORGANIZATION_IMAGE: "images/default-theme/logo.png"
+EDXAPP_FOOTER_ORGANIZATION_IMAGE: "themes/edx.org/images/logo.png"
 
 EDXAPP_ENV_EXTRA: {}
 EDXAPP_AUTH_EXTRA: {}
@@ -245,6 +267,7 @@ EDXAPP_CMS_AUTH_EXTRA: "{{ EDXAPP_AUTH_EXTRA }}"
 EDXAPP_ENABLE_MKTG_SITE: false
 EDXAPP_MKTG_URL_LINK_MAP: {}
 EDXAPP_MKTG_URLS: {}
+EDXAPP_SUPPORT_SITE_LINK: ''
 EDXAPP_EDXMKTG_USER_INFO_COOKIE_NAME: "edx-user-info"
 # Set this sets the url for static files
 # Override this var to use a CDN
@@ -327,13 +350,10 @@ EDXAPP_EXTRA_REQUIREMENTS: []
 
 EDXAPP_GOOGLE_ANALYTICS_ACCOUNT: "None"
 
-EDXAPP_SEGMENT_IO_LMS: false
-EDXAPP_SEGMENT_IO_LMS_KEY: ""
 EDXAPP_OPTIMIZELY_PROJECT_ID: "None"
 EDXAPP_TRACKING_SEGMENTIO_WEBHOOK_SECRET: ""
-# For the CMS
-EDXAPP_SEGMENT_IO_KEY: ""
-EDXAPP_SEGMENT_IO: false
+EDXAPP_CMS_SEGMENT_KEY: "None"
+EDXAPP_LMS_SEGMENT_KEY: "None"
 EDXAPP_EVENT_TRACKING_SEGMENTIO_EMIT_WHITELIST: []
 
 EDXAPP_EDX_API_KEY: "PUT_YOUR_API_KEY_HERE"
@@ -454,9 +474,20 @@ CDN_VIDEO_URLS: {}
 PERFORMANCE_GRAPHITE_URL: 'SetPerformanceGraphiteHostName'
 
 # E-Commerce Related Settings
-EDXAPP_ECOMMERCE_PUBLIC_URL_ROOT: 'https://www.example.com'
-EDXAPP_ECOMMERCE_API_URL: 'https://www-internal.example.com/api'
+EDXAPP_ECOMMERCE_PUBLIC_URL_ROOT: "http://localhost:8002"
+EDXAPP_ECOMMERCE_API_URL: "http://localhost:8002/api/v2"
 EDXAPP_ECOMMERCE_API_SIGNING_KEY: 'SET-ME-PLEASE'
+
+# Mailchimp Settings
+EDXAPP_MAILCHIMP_NEW_USER_LIST_ID: null
+
+# Social Sharing Related Settings
+EDXAPP_SOCIAL_SHARING_SETTINGS:
+  CUSTOM_COURSE_URLS: false
+  DASHBOARD_FACEBOOK: false
+  CERTIFICATE_FACEBOOK: false
+  CERTIFICATE_TWITTER: false
+  DASHBOARD_TWITTER: false
 
 #To use AWS S3 as your backend, you need different kwargs:
 # EDXAPP_PROFILE_IMAGE_BACKEND_CONFIG:
@@ -504,6 +535,25 @@ EDXAPP_XBLOCK_SETTINGS: {}
 # the value is the 32-character key.
 EDXAPP_CREDIT_PROVIDER_SECRET_KEYS: {}
 
+# Proctoring configuration (redirct URLs and keys shared between systems)
+EDXAPP_PROCTORING_SETTINGS: {}
+EDXAPP_PROCTORING_BACKEND_PROVIDER:
+  class: 'edx_proctoring.backends.null.NullBackendProvider'
+  options: {}
+
+# Comprehensive Theming
+EDXAPP_COMPREHENSIVE_THEME_DIR: ""
+
+# SAML KEYS
+EDXAPP_SOCIAL_AUTH_SAML_SP_PRIVATE_KEY: ''
+EDXAPP_SOCIAL_AUTH_SAML_SP_PUBLIC_CERT: ''
+
+# Session cookie setting
+# Only set this to true for client side profiling, never for production
+EDXAPP_SESSION_SAVE_EVERY_REQUEST: false
+
+EDXAPP_SESSION_COOKIE_SECURE: false
+
 #-------- Everything below this line is internal to the role ------------
 
 #Use YAML references (& and *) and hash merge <<: to factor out shared settings
@@ -548,6 +598,7 @@ edxapp_aa_command: "{% if EDXAPP_SANDBOX_ENFORCE %}aa-enforce{% else %}aa-compla
 # all edxapp requirements files
 edxapp_requirements_with_github_urls:
   - "{{ pre_requirements_file }}"
+  - "{{ post_requirements_file }}"
   - "{{ base_requirements_file }}"
   - "{{ paver_requirements_file }}"
   - "{{ github_requirements_file }}"
@@ -653,15 +704,20 @@ edxapp_generic_auth_config:  &edxapp_generic_auth
   ANALYTICS_API_KEY:  "{{ EDXAPP_ANALYTICS_API_KEY }}"
   EMAIL_HOST_USER: "{{ EDXAPP_EMAIL_HOST_USER }}"
   EMAIL_HOST_PASSWORD: "{{ EDXAPP_EMAIL_HOST_PASSWORD }}"
+  YOUTUBE_API_KEY: "{{ EDXAPP_YOUTUBE_API_KEY }}"
   ZENDESK_USER: "{{ EDXAPP_ZENDESK_USER }}"
   ZENDESK_API_KEY: "{{ EDXAPP_ZENDESK_API_KEY }}"
   CELERY_BROKER_USER: "{{ EDXAPP_CELERY_USER }}"
   CELERY_BROKER_PASSWORD: "{{ EDXAPP_CELERY_PASSWORD }}"
   GOOGLE_ANALYTICS_ACCOUNT: "{{ EDXAPP_GOOGLE_ANALYTICS_ACCOUNT }}"
-  THIRD_PARTY_AUTH: "{{ EDXAPP_THIRD_PARTY_AUTH }}"
   AWS_STORAGE_BUCKET_NAME: "{{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}"
   DJFS: "{{ EDXAPP_DJFS }}"
   CREDIT_PROVIDER_SECRET_KEYS: "{{ EDXAPP_CREDIT_PROVIDER_SECRET_KEYS }}"
+  SOCIAL_AUTH_SAML_SP_PRIVATE_KEY: "{{ EDXAPP_SOCIAL_AUTH_SAML_SP_PRIVATE_KEY }}"
+  SOCIAL_AUTH_SAML_SP_PUBLIC_CERT: "{{ EDXAPP_SOCIAL_AUTH_SAML_SP_PUBLIC_CERT }}"
+  FACEBOOK_APP_ID: "{{ EDXAPP_FACEBOOK_APP_ID }}"
+  FACEBOOK_APP_SECRET: "{{ EDXAPP_FACEBOOK_APP_SECRET }}"
+  FACEBOOK_API_VERSION: "{{ EDXAPP_FACEBOOK_API_VERSION }}"
 
 generic_cache_config: &default_generic_cache
   BACKEND:  'django.core.cache.backends.memcached.MemcachedCache'
@@ -680,7 +736,7 @@ generic_env_config:  &edxapp_generic_env
   CROSS_DOMAIN_CSRF_COOKIE_NAME: "{{ EDXAPP_CROSS_DOMAIN_CSRF_COOKIE_NAME }}"
   VIDEO_UPLOAD_PIPELINE: "{{ EDXAPP_VIDEO_UPLOAD_PIPELINE }}"
   DEPRECATED_ADVANCED_COMPONENT_TYPES: "{{ EDXAPP_DEPRECATED_ADVANCED_COMPONENT_TYPES }}"
-  OAUTH_OIDC_ISSUER: "https://{{ EDXAPP_LMS_BASE }}/oauth2"
+  OAUTH_OIDC_ISSUER: "{{ EDXAPP_LMS_BASE_SCHEME | default('https') }}://{{ EDXAPP_LMS_BASE }}/oauth2"
   XBLOCK_FS_STORAGE_BUCKET: "{{ EDXAPP_XBLOCK_FS_STORAGE_BUCKET }}"
   XBLOCK_FS_STORAGE_PREFIX: "{{ EDXAPP_XBLOCK_FS_STORAGE_PREFIX }}"
   ANALYTICS_DATA_URL: "{{ EDXAPP_ANALYTICS_DATA_URL }}"
@@ -718,7 +774,7 @@ generic_env_config:  &edxapp_generic_env
   WIKI_ENABLED: true
   SYSLOG_SERVER:  "{{ EDXAPP_SYSLOG_SERVER }}"
   LOG_DIR:  "{{ COMMON_DATA_DIR }}/logs/edx"
-  JWT_ISSUER: "https://{{ EDXAPP_LMS_BASE }}/oauth2"
+  JWT_ISSUER: "{{ EDXAPP_LMS_BASE_SCHEME | default('https') }}://{{ EDXAPP_LMS_BASE }}/oauth2"
   JWT_EXPIRATION: '{{ EDXAPP_JWT_EXPIRATION }}'
 
   #must end in slash (https://docs.djangoproject.com/en/1.4/ref/settings/#media-url)
@@ -731,6 +787,7 @@ generic_env_config:  &edxapp_generic_env
   LANGUAGE_CODE: "{{ EDXAPP_LANGUAGE_CODE }}"
   MKTG_URL_LINK_MAP: "{{ EDXAPP_MKTG_URL_LINK_MAP }}"
   MKTG_URLS: "{{ EDXAPP_MKTG_URLS }}"
+  SUPPORT_SITE_LINK: "{{ EDXAPP_SUPPORT_SITE_LINK }}"
   CDN_VIDEO_URLS: "{{ CDN_VIDEO_URLS }}"
   PERFORMANCE_GRAPHITE_URL: "{{ PERFORMANCE_GRAPHITE_URL }}"
 
@@ -751,6 +808,9 @@ generic_env_config:  &edxapp_generic_env
     staticfiles:
       <<: *default_generic_cache
       KEY_PREFIX: "{{ ansible_hostname|default('staticfiles') }}_general"
+    configuration:
+      <<: *default_generic_cache
+      KEY_PREFIX: "{{ ansible_hostname|default('configuration') }}"
     celery:
       <<: *default_generic_cache
       KEY_PREFIX:  'celery'
@@ -768,8 +828,6 @@ generic_env_config:  &edxapp_generic_env
   SESSION_COOKIE_DOMAIN:  "{{ EDXAPP_SESSION_COOKIE_DOMAIN }}"
   SESSION_COOKIE_NAME:  "{{ EDXAPP_SESSION_COOKIE_NAME }}"
   COMMENTS_SERVICE_KEY: "{{ EDXAPP_COMMENTS_SERVICE_KEY }}"
-  SEGMENT_IO_LMS: "{{ EDXAPP_SEGMENT_IO_LMS }}"
-  SEGMENT_IO: "{{ EDXAPP_SEGMENT_IO }}"
   THEME_NAME: "{{ edxapp_theme_name }}"
   TECH_SUPPORT_EMAIL: "{{ EDXAPP_TECH_SUPPORT_EMAIL }}"
   CONTACT_EMAIL: "{{ EDXAPP_CONTACT_EMAIL }}"
@@ -796,10 +854,14 @@ generic_env_config:  &edxapp_generic_env
   REGISTRATION_EXTRA_FIELDS: "{{ EDXAPP_REGISTRATION_EXTRA_FIELDS }}"
   XBLOCK_SETTINGS: "{{ EDXAPP_XBLOCK_SETTINGS }}"
   EDXMKTG_USER_INFO_COOKIE_NAME: "{{ EDXAPP_EDXMKTG_USER_INFO_COOKIE_NAME }}"
+  COMPREHENSIVE_THEME_DIR: "{{ EDXAPP_COMPREHENSIVE_THEME_DIR }}"
+  SESSION_SAVE_EVERY_REQUEST: "{{ EDXAPP_SESSION_SAVE_EVERY_REQUEST }}"
+  SOCIAL_SHARING_SETTINGS: "{{ EDXAPP_SOCIAL_SHARING_SETTINGS }}"
+  SESSION_COOKIE_SECURE: "{{ EDXAPP_SESSION_COOKIE_SECURE }}"
 
 lms_auth_config:
   <<: *edxapp_generic_auth
-  SEGMENT_IO_LMS_KEY: "{{ EDXAPP_SEGMENT_IO_LMS_KEY }}"
+  SEGMENT_KEY: "{{ EDXAPP_LMS_SEGMENT_KEY }}"
   OPTIMIZELY_PROJECT_ID: "{{ EDXAPP_OPTIMIZELY_PROJECT_ID }}"
   EDX_API_KEY: "{{ EDXAPP_EDX_API_KEY }}"
   VERIFY_STUDENT: "{{ EDXAPP_VERIFY_STUDENT }}"
@@ -812,7 +874,7 @@ lms_auth_config:
     default:
         ENGINE: 'xmodule.modulestore.mixed.MixedModuleStore'
         OPTIONS:
-          mappings: "{{ EDXAPP_XML_MAPPINGS }}"
+          mappings: {}
           stores:
             - NAME: 'split'
               ENGINE: 'xmodule.modulestore.split_mongo.split_draft.DraftVersioningModuleStore'
@@ -828,11 +890,7 @@ lms_auth_config:
                 default_class: 'xmodule.hidden_module.HiddenDescriptor'
                 fs_root:  "{{ edxapp_course_data_dir }}"
                 render_template: 'edxmako.shortcuts.render_to_string'
-            - NAME: 'xml'
-              ENGINE: 'xmodule.modulestore.xml.XMLModuleStore'
-              OPTIONS:
-                data_dir: "{{ edxapp_course_data_dir }}"
-                default_class: 'xmodule.hidden_module.HiddenDescriptor'
+  PROCTORING_BACKEND_PROVIDER: "{{ EDXAPP_PROCTORING_BACKEND_PROVIDER }}"
 
 
 lms_env_config:
@@ -860,16 +918,20 @@ lms_env_config:
   PROFILE_IMAGE_MAX_BYTES: "{{ EDXAPP_PROFILE_IMAGE_MAX_BYTES }}"
   EDXNOTES_PUBLIC_API: "{{ EDXAPP_EDXNOTES_PUBLIC_API }}"
   EDXNOTES_INTERNAL_API: "{{ EDXAPP_EDXNOTES_INTERNAL_API }}"
+  LTI_USER_EMAIL_DOMAIN: "{{ EDXAPP_LTI_USER_EMAIL_DOMAIN }}"
+  LTI_AGGREGATE_SCORE_PASSBACK_DELAY: "{{ EDXAPP_LTI_AGGREGATE_SCORE_PASSBACK_DELAY }}"
+  PROCTORING_SETTINGS: "{{ EDXAPP_PROCTORING_SETTINGS }}"
+  CREDIT_HELP_LINK_URL: "{{ EDXAPP_CREDIT_HELP_LINK_URL }}"
+  ELASTIC_SEARCH_CONFIG: "{{ EDXAPP_ELASTIC_SEARCH_CONFIG }}"
+  MAILCHIMP_NEW_USER_LIST_ID: "{{ EDXAPP_MAILCHIMP_NEW_USER_LIST_ID }}"
 
 cms_auth_config:
   <<: *edxapp_generic_auth
-  SEGMENT_IO_KEY: "{{ EDXAPP_SEGMENT_IO_KEY }}"
+  SEGMENT_KEY: "{{ EDXAPP_CMS_SEGMENT_KEY }}"
   MODULESTORE:
     default:
         ENGINE: 'xmodule.modulestore.mixed.MixedModuleStore'
         OPTIONS:
-# See commented section below. LMS-11258
-#          mappings: "{{ EDXAPP_XML_MAPPINGS }}"
           mappings: {}
           stores:
             - NAME: 'split'
@@ -886,9 +948,6 @@ cms_auth_config:
                 default_class: 'xmodule.hidden_module.HiddenDescriptor'
                 fs_root:  "{{ edxapp_course_data_dir }}"
                 render_template: 'edxmako.shortcuts.render_to_string'
-
-# Commented for now so that it can be tested first: LMS-11258
-#            - *edxapp_generic_xml_modulestore
   PARSE_KEYS: "{{ EDXAPP_PARSE_KEYS }}"
 cms_env_config:
   <<: *edxapp_generic_env
@@ -920,7 +979,7 @@ worker_core_mult:
   lms: 4
   cms: 2
 
-# Theming
+# Stanford-style Theming
 # Turn theming on and off with edxapp_use_custom_theme
 # Set theme name with edxapp_theme_name
 # Stanford, for example, uses edxapp_theme_name: 'stanford'

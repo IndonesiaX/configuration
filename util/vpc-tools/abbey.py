@@ -277,7 +277,7 @@ if [[ ! -x /usr/bin/git || ! -x /usr/bin/pip ]]; then
     /usr/bin/apt-get update
     /usr/bin/apt-get install -y git python-pip python-apt \\
         git-core build-essential python-dev libxml2-dev \\
-        libxslt-dev curl --force-yes
+        libxslt-dev curl libmysqlclient-dev --force-yes
 fi
 
 
@@ -674,16 +674,16 @@ def send_hipchat_message(message):
     print(message)
     if args.callback_url:
         r=requests.get("{}/{}".format(args.callback_url, message))
-
-    #If hipchat is configured send the details to the specified room
-    if args.hipchat_api_token and args.hipchat_room_id:
-        import hipchat
-        try:
-            hipchat = hipchat.HipChat(token=args.hipchat_api_token)
-            hipchat.message_room(args.hipchat_room_id, 'AbbeyNormal',
-                                 message)
-        except Exception as e:
-            print("Hipchat messaging resulted in an error: %s." % e)
+    else:
+        #If hipchat is configured send the details to the specified room
+        if args.hipchat_api_token and args.hipchat_room_id:
+            import hipchat
+            try:
+                hipchat = hipchat.HipChat(token=args.hipchat_api_token)
+                hipchat.message_room(args.hipchat_room_id, 'AbbeyNormal',
+                                     message)
+            except Exception as e:
+                print("Hipchat messaging resulted in an error: %s." % e)
 
 if __name__ == '__main__':
 
